@@ -1,0 +1,169 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{hhline}
+\usepackage{multirow}
+\usepackage{geometry}
+ \geometry{
+ a4paper,
+ total={170mm,257mm},
+ left=20mm,
+ top=30mm,
+ right=20mm,
+ bottom=19mm,
+ }
+
+
+\begin{document}
+
+\title{ASSIGNMENT-3}
+
+\section*{STEP 1: DATA COLLECTION AND TEXT PREPROCESSING}
+Data is collected from Steam's official website from May 14th to May 25th using the code in Figure 1(Figure 1 is in next page). The total number of reviews collected over this time period is 1719.The code for Step-1 is in spark\_streaming\_saving\_example.ipynb. For step 2, code is in predictive\_modelling.ipynb. For step 3, code is in livestream.ipynb.\\
+\\
+Of the files collected during live streaming, the only relevant files containing game reviews were titled "part-0000". Other files with names and extensions such as ".\_SUCCESS.crc","\_SUCCESS" and ".part-00000.crc" are not relevant for the text classification task. Hence, these files were removed by converting all the file names for files located under the root subdirectory to string format and then isolating for only those files starting with the letter "p" and not ending with the .crc extension. Figure 2 is a snippet of the code used to obtain the relevant files(Figure 2 in  next page).\\
+\\
+The obtained text reviews were then converted to Pandas dataframe and cleaned for natural language processing as well as machine learning. The data was then converted to csv and saved to local machine. The data was read in as csv and was converted to Spark dataframe for further data manipulation and predictive modelling. Before writing to csv, the is.ascii() method was used on the Pandas dataframe to ensure that reviews written in alphabets other than English were removed.After the data was loaded as csv and converted to Spark dataframe, some rows had the value "null" or "." either for the reviews column or the label column. These rows were dropped along with rows with NA values. Punctuation marks such as ",","!", etc. and digits were removed using regex pattern. The rest of the data manipulation was carried out within the context of predictive modelling(Step-2).\\
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[textwidth=0.5]{F1.png}
+    \caption{Streaming data from Steam and saving to local machine}
+    \label{fig:my_label}
+\end{figure}
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics{fig2.png}
+    \caption{Extraction of relevant files for text classification}
+    \label{}
+\end{figure}
+
+\section*{STEP 2: PREDICTIVE MODELLING}
+Further data preprocessing for predictive modellling included tokenization by Regex Tokenizer followed by removal of stop words by StopWordsRemover. The label column for the reviews  was of string type and so it was cast into integer type for natural language processing.Feature extraction was carried out by three methods: by using CountVectorizer, Word2Vec and Tf-Idf. The models utilizing the input from these methods included logistic regression, naive bayes classifier, decision tree classifier, random forest classifier, linear support vector classifier, gradient boosting trees and One-vs-Rest classifier(with logistic regression as base classifier). A pipeline was constructed with the following stages for models using Count Vectorizer or Word2Vec: \\
+tokenization$->$stop words removal$->$CountVectorizer$->$model. \\
+In the case of HashingTF, the pipeline was:\\
+tokenization$->$stop words removal$->$hashingTF$->$idf$->$model\\
+\\
+An example of this pipeline and its implementation is given in the context of logistic regression and Count Vectorizer in Figure-3.\\
+The evaluation criteria used for these different models were: AUC, f1 score,recall, precision and confusion matrix. The results from fitting the different models are given in Figure-4.The confusion matrices for the three feature extraction methods for the different models are in Figures-5 to 7. Code used to obtain the evaluation results are in Figure-8.\\
+\begin{figure}
+    \centering
+    \includegraphics{pipeline.png}
+    \caption{Pipeline for logistic regression-Count Vectorizer}
+    \label{fig:my_label}
+\end{figure}
+With Count Vectorizer, logistic regression had the highest accuracy(0.9086), high precision for true positives(0.95) as well as reasonably good AUC in comparison to other models considered. High precision for true positives is incredibly useful for classifying Steam reviews as majority of the reviews collected in Steam have true label of being positive reviews(1277 of the initial 1719 reviews were positive). Other methods with good accuracy and precision are linear SVC, naive Bayes and Gradient Boosted Trees.  However, decision trees,gradient boosted trees and linear SVC have much lower f1 scores for true negatives than logistic regression.In the case of Word2Vec model, logistic regression performs much better than other models overall in terms of accuracy,AUC,f1-score,precision and recall. The same pattern holds for TfIdf. Hence, logistic regression is chosen for classification of live streamed reviews.\\
+
+\begin{figure}[!htp]
+    \centering
+    \includegraphics{table.png}
+    \caption{Evaluation criteria and results for different models and feature extraction methods}
+    \label{fig:my_label}
+\end{figure}
+%\begin{table}[!htp]
+%\renewcommand{\arraystretch}{1.2}
+%\footnotesize
+ %   \centering
+  %  \begin{tabular}{|p{3cm}|ccccccccccccccc|}
+   % \hline
+%\textbf{Feature Extraction/}& \multicolumn{2|}{c}{\textbf{Precision}} & \multicolumn{2|}{c}%{\textbf{Recall}} & \multicolumn{2|}{c}{\textbf{f1-score}}&\textbf{AUC}&{\textbf{Accuracy}\\
+%		% \textbf{Inactive Modes} & \textbf{Description}\\
+%		\cline{2-5} \cline{4-5}\cline{6-7}\cline{8-10}\cline{11-14}
+          
+%\textbf{Evaluation}		& \textbf{(0)} & \textbf{(1)} & \textbf{(0)} & \textbf{(1)} %&\textbf{(0)} & \textbf{(1)}\hspace{1mm}  \\
+ % \hline\hline
+  %  \textbf{Count Vectorizer}\\
+  %\hline
+%\textbf{Logistic Regression}  & 0.58&0.95&0.76&0.88&0.66&0.91&0.868&&0.9086\\
+%\textbf{naive Bayes}&0.65&0.95&0.79&0.91&0.71&0.93&0.9086&0.8902\\
+%\textbf{Decision Trees}&0.89&0.85&0.19&0.99&0.31&0.92&0.8103&0.6045\\
+%%\textbf{Random Forest} &0&0.82 & 0 & 1 & 0 & 0.9 & 0.7711&0.7428\\
+%\textbf{Gradient Boosted Trees}&0.67&0.86&0.24&0.97&0.35&0.91& 0.7978&0.812\\
+%\textbf{Linear SVC}&0.53&0.92&0.67&0.87&0.59&0.9&0.8983&0.8425\\
+%\textbf{One-Vs-Rest}&0.67&0.86&0.24&0.97&0.35&0.91&0.7978&0.8439\\
+%\hline\hline
+%\textbf{Word2Vec}\\
+%\hline\hline
+%\textbf{Logistic Regression}&0.62&0.85&0.19&0.97&0.29&0.91  & 0.7797&0.7978 \\
+%\textbf{Decision Trees}&0.32&0.83&0.14&0.93&0.2&0.88&0.5531&0.760\\
+%\textbf{Random Forest} &0&0.82&0&1&0&0.9&0.6748& 0.743\\
+%\textbf{Gradient Boosted Trees}&0.15&0.82&0.05&0.94&0.07&0.88& 0.6449&0.736\\
+%\textbf{Linear SVC}&0&0.82&0&1&0&0.9&0.63999& 0.743\\
+%\hline\hline
+%\textbf{TfIdf}\\
+%\hline\hline
+%\textbf{Logistic Regression}&0.47&0.96 & 0.86&0.79&0.61&0.87&0.8234&0.8017 \\
+%\textbf{naive Bayes}&1&0.84&0.1&1&0.17&0.91& 0.5476&0.8397\\
+%\textbf{Decision Trees}&0.89&0.85&0.19&0.99&0.31&0.92&0.5927&0.8523\\
+%\textbf{Random Forest} &0&0.82&0&1&0&0.9&0.5&0.8228\\
+%\textbf{Gradient Boosted Trees}&0.91&0.86&0.24&0.99&0.38&0.92&0.616&0.8608\\
+%\textbf{Linear SVC}&0.54&0.93&0.69&0.87&0.6&0.9& 0.781&0.8397\\
+
+%877637130801
+%624472573839
+%206751054853
+%848101265823
+%594936708861
+%624472573839
+
+
+%432234432235
+%%190476190477
+%739926739927
+
+%4835164835165
+%1355311355311
+
+%\hline\hline
+%\end{tabular}
+%\caption{Evaluation criteria and results for different models and %feature extraction methods}
+%\end{table}
+%For Word2Vec, neither naive Bayes nor OneVsRest classifiers were working. As a result, we restrict our 
+
+
+ \newpage
+ \begin{figure}[!h]
+     \centering
+     \includegraphics[\textwidth=0.3]{cv_hm.png}
+     \caption{Confusion matrices for count vectorization.\textbf{Left Panel-top to bottom:}Logistic Regression, Decision Trees, Gradient Boosted Trees, One-Vs-Rest,\textbf{Right Panel-top to bottom:}naive Bayes,Random Forest,linear SVC}
+     \label{fig:my_label}
+ \end{figure}
+  \begin{figure}[!h]
+     \centering
+     \includegraphics[\textwidth=0.3]{wv.png}
+     \caption{Confusion matrices for Word2Vec.\textbf{Left Panel-top to bottom:}Logistic Regression, Random Forest,\textbf{Right Panel-top to bottom:}Decision Trees,linear SVC}
+     \label{fig:my_label}
+ \end{figure}
+ \newpage
+
+  \begin{figure}[!h]
+     \centering
+     \includegraphics[\textwidth=0.3]{tf.png}
+     \caption{Confusion matrices for TfIdf: \textbf{Left Panel-top to bottom:}Logistic Regression, Decision Trees,Gradient Boosted Trees\textbf{Right Panel-top to bottom:}naive Bayes,Random Forest,linear SVC}
+     \label{fig:my_label}
+ \end{figure}
+ \newpage
+ \begin{figure}
+     \centering
+     \includegraphics{eval_code.png}
+     \caption{Computation of AUC,accuracy,precision,recall,f1-score,support and construction of confusion matrix for logistic regression-count vectorizer combination}
+     \label{fig:my_label}
+ \end{figure}
+ \section*{STEP-3-LIVE STREAMING}
+In order to conduct live streaming, the chosen models needed to be saved and loaded in the context of the function designed to live stream Steam reviews. However, the code for saving the chosen models returned multiple py4j errors during the predictive modelling stage. Therefore, the full data cleaning and modelling codes used in the predictive modelling stage were used in the function that would ideally only have loaded the saved model and applied it to the streamed data. Code for streaming,cleaning and applying model for logistic regression and Word2Vec is given in Figure-9. TfIdf was also used and prediction using TfIdf can be found in the relevant Jupyter notebook. The accompanying predictions on livestreamed reviews can be found in Figure-10.\\
+\newpage
+\begin{figure}
+    \centering
+    \includegraphics{pred.png}
+    \caption{Predictive Modelling for livestreamed reviews}
+    \label{}
+\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.5]{live.png}
+    \caption{True Labels and Predictions for livestreamed reviews}
+    \label{fig:my_label}
+\end{figure}
+
+
+\end{document}
