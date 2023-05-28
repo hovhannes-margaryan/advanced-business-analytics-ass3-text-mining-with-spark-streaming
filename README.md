@@ -4,7 +4,11 @@ Steam is a popular digital distribution platform for video games. It allows user
 download games directly to their computers. With features like automatic updates, a strong social
 community which in turn generates good deal of data. It includes game reviews that can be both
 negative and positive. The goal of the project is to build a model that can use labelled data to train a
-model to predict the sentiment of the review. First, data pre‐processing is conducted on the dataset
-(punctuation and stop‐word removal, etc). Second, Word2Vec [7] is applied on the TF‐IDF. Third, the
-following three methods are used for classification: Logistic Regression, Gradient‐Boosted Trees and
-Support Vector Classification. The latter achieves the highest accuracy, 79.3% on the validation set.
+model to predict the sentiment of the review. First, data pre‐processing is conducted on the dataset. Second, predictive model is built using Pyspark. Third,prediction is performed using streamed reviews from Spark. 
+
+These are the following files:
+1)d.csv-reviews from Steam that form the historical database for Step 1 of assignment
+2)01_big_data_assignment_3_streaming.ipynb-collection of data from Steam to construct d.csv
+3)PREDICTION.ipynb-models for prediction
+4)02_big_data_assignment_3_modelling_3-
+5)LIVESTREAM.ipynb-deployment of chosen model for prediction on live stream 
