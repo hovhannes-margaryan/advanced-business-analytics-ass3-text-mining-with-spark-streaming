@@ -1,4 +1,4 @@
-# Advanced Business Analytics Assignment 3 Text Miningw with Spark Streaming
+# Advanced Business Analytics Assignment 3 Text Mining with Spark Streaming
 
 Steam is a popular digital distribution platform for video games. It allows users to purchase and
 download games directly to their computers. With features like automatic updates, a strong social
