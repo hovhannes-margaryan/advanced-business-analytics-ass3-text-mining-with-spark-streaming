@@ -10,5 +10,5 @@ These are the following files:
 1)d.csv-reviews from Steam that form the historical database for Step 1 of assignment
 2)01_big_data_assignment_3_streaming.ipynb-collection of data from Steam to construct d.csv
 3)PREDICTION.ipynb-models for prediction
-4)02_big_data_assignment_3_modelling_3-
+4)02_big_data_assignment_3_modelling_-models for prediction
 5)LIVESTREAM.ipynb-deployment of chosen model for prediction on live stream 
