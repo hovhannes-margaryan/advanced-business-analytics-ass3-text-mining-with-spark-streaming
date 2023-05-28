@@ -6,9 +6,9 @@ community which in turn generates good deal of data. It includes game reviews th
 negative and positive. The goal of the project is to build a model that can use labelled data to train a
 model to predict the sentiment of the review. First, data pre‐processing is conducted on the dataset. Second, predictive model is built using Pyspark. Third,prediction is performed using streamed reviews from Spark. 
 
-These are the following files:
+The following are the files used for generating the report: 
 1)d.csv-reviews from Steam that form the historical database for Step 1 of assignment
 2)01_big_data_assignment_3_streaming.ipynb-collection of data from Steam to construct d.csv
 3)PREDICTION.ipynb-models for prediction
 4)02_big_data_assignment_3_modelling_-models for prediction
-5)LIVESTREAM.ipynb-deployment of chosen model for prediction on live stream 
+5)LIVESTREAM.ipynb-deployment of chosen models for prediction on live streamed reviews 
